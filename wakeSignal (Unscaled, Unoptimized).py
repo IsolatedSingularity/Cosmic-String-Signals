@@ -2,96 +2,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import ConvexHull
-
-# Task list
-# Testing convex hull: plot temperature points and hull
+# Make a plotting function + close sections of code + for loop axes labels (in code for hull)
 # Make fixed values parameters
+# Testing convex hull 
+# Connect lines & define boundary + new center of wake to old center
+# Boolean function (boundary-volume criterion)
 # Wake length dimensions
 # Scale dimensions from Mpc to redshift (non-natural, astrophysical units) (take amplitude in 21cmfast and convert to natural untis)
 # Scale d -> z(d) from string theory
 # Combine: Resolution, frequency (21cmFAST Mpc units, output amplitude in Kelvin) & match grid points (EXPLICIT), Gmu free param (start with 10^-8)
-# Clean up all code and plots & optimize
+# Add variational brightness temperature 
 # Analytically how does crossover redshift depend on Gmu
-
-
-#%% Defining compact plotting functions 유
-
-def quickPlot(scale,points,labels,colors,colormaps=[]):
-    
-    # Defining generic plotting parameters 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-
-    # Labelling & scaling axes
-    for axis in ["x", "y", "z"]:
-        scale = scale #Initializing local scaling variable to be used by eval()
-        eval("ax.set_{:s}label('{:s}')".format(axis, axis)) #Labelling axes by x,y,z
-        eval("ax.set_{:s}lim(0,scale)".format(axis)) #Setting axes limits as (0,scale)
-    
-    # Differentiating if points have optional (temperature) color maps
-    if len(colormaps) == 0:
-        
-        # Iterating through sets of points
-        for pointType in range(len(points)):
-            
-            # Differentiating between individual and sets of points
-            if points[pointType].ndim == 2:
-                ax.scatter(
-                    points[pointType][:,0], points[pointType][:,1], points[pointType][:,2],
-                    label = labels[pointType], color = colors[pointType]
-                )
-                
-            else:
-                ax.scatter(
-                    points[pointType][0], points[pointType][1], points[pointType][2],
-                    label = labels[pointType], color = colors[pointType]
-                )
-    else:
-        physicalPlot = ax.scatter(
-        points[:,0],points[:,1],points[:,2], c = colormaps,
-        label = 'Internal temperature points', cmap = plt.cm.viridis
-        )
-    
-        ax.set_box_aspect([np.ptp(i) for i in meshGrid]) #Equal aspect ratio for axes
-        fig.colorbar(physicalPlot, ax=ax, label = 'δT(z)', pad=0.1)
-    
-    ax.legend()
-    plt.show()
-
-    return
-
-
-def quickPlotHull(hullVertices, testPoints=[]):
-    
-    # Defining generic plotting parameters
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    
-    # Labelling axes
-    for axis in ["x", "y", "z"]:
-        eval("ax.set_{:s}label('{:s}')".format(axis, axis)) #Labelling axes by x,y,z
-    
-    # Defining hull & plotting hull vertices
-    hull = ConvexHull(hullVertices)
-    ax.plot(
-        hullVertices.T[0], hullVertices.T[1], hullVertices.T[2], "ko", color='blue'
-        )
-    
-    # Plotting hull simplices that are connected to vertices
-    for s in hull.simplices:
-        s = np.append(s, s[0])  # Permuting back to first coordinate
-        ax.plot(hullVertices[s, 0], hullVertices[s, 1], hullVertices[s, 2], color='mediumspringgreen')
-    
-    # Plotting any potential test points
-    if len(testPoints) != 0:
-        ax.scatter(
-        testPoints[:,0],testPoints[:,1],testPoints[:,2], color='black'
-        )
-    
-    ax.legend()
-    plt.show()
-
-    return
+# Add anisotropies on string manifold
+# Clean up all code and plots
+# Optimizations of space
 
 
 # %% Defining Hubble volume and cosmic string wake wedge 유
@@ -118,19 +42,49 @@ wakeWedge = np.array([
 ])
 
 # Plotting Hubble lattice and wake wedge
-quickPlot(
-    hubbleScale,[hubbleLattice, wakeWedge],['Hubble lattice','Wake wedge'],
-    ['blue','red']
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_ylim(0,hubbleScale)
+ax.set_xlim(0,hubbleScale)
+ax.set_zlim(0,hubbleScale)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+ax.scatter(
+    hubbleLattice[:,0],hubbleLattice[:,1],hubbleLattice[:,2], color='blue',
+    label = 'Hubble lattice'
     )
-
-# Plotting again with smaller axis
-quickPlot(
-    hubbleScale/2,[hubbleLattice, wakeWedge, middlePointWake],['Hubble lattice','Wake wedge','Wake center'],
-    ['blue','red','black']
+ax.scatter(
+    wakeWedge[:,0],wakeWedge[:,1],wakeWedge[:,2],
+    label = 'Wake wedge', color='red'
     )
+ax.legend()
+
+# Plotting with smaller axis
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_ylim(0,hubbleScale/2)
+ax.set_xlim(0,hubbleScale/2)
+ax.set_zlim(0,hubbleScale/2)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+ax.scatter(
+    hubbleLattice[:,0],hubbleLattice[:,1],hubbleLattice[:,2], color='blue',
+    label = 'Hubble lattice'
+    )
+ax.scatter(
+    wakeWedge[:,0],wakeWedge[:,1],wakeWedge[:,2],
+    label = 'Wake wedge', color='red'
+    )
+ax.scatter(
+    middlePointWake[0],middlePointWake[1],middlePointWake[2],
+    label = 'Wake center', color='black'
+    )
+ax.legend()
 
 
-# %% Generating rotations via group representations and translations on wake wedge state 유
+# %% Generating rotation via group representations and translations on wake wedge state 유
 
 # Real representation of SO(3) group
 def xAxisRotation(theta):
@@ -149,6 +103,7 @@ def zAxisRotation(theta):
     ])
 
 # Shifting the wake to the origin to then perform rotations
+
 shiftedWedge = np.add(wakeWedge,-middlePointWake)
 
 # Applying rotations on wake (random angles around all axes)
@@ -161,10 +116,31 @@ modifiedWedgeIII = np.dot(modifiedWedgeII, zAxisRotation(2*np.pi).T) #rotation o
 rotatedWedge = np.add(modifiedWedgeIII,middlePointWake)
 
 # Plotting unrotated and rotated wake in the Hubble lattice
-quickPlot(
-    hubbleScale/2,[rotatedWedge, wakeWedge, middlePointWake],['Rotated wake','Wake wedge','Wake center'],
-    ['darkorchid','red','black']
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_ylim(0,hubbleScale/2)
+ax.set_xlim(0,hubbleScale/2)
+ax.set_zlim(0,hubbleScale/2)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+ax.scatter(
+    middlePointWake[0],middlePointWake[1],middlePointWake[2],
+    label = 'Wake center', color='black'
     )
+ax.scatter(
+    rotatedWedge[:,0],rotatedWedge[:,1],rotatedWedge[:,2], color='darkorchid',
+    label = 'Rotated wake'
+    )
+ax.scatter(
+    wakeWedge[:,0],wakeWedge[:,1],wakeWedge[:,2], color='red',
+    label = 'Unrotated wake', cmap='hot'
+    )
+# ax.scatter(
+#     shiftedWedge[:,0],shiftedWedge[:,1],shiftedWedge[:,2], color='blue',
+#     label = 'Shifted wake', cmap='hot'
+#     )
+ax.legend()
 
 
 #%% Computing the boundary of the wedge via convex hulls 유
@@ -175,24 +151,58 @@ cubeVertices = np.array([
     [0,0,1],[1,0,1],[1,1,1],[0,1,1]
      ])
 
-# Plotting cube complex closure
-quickPlotHull(cubeVertices)
+# Defining convex closure
+hull = ConvexHull(cubeVertices)
+
+# Creating subplots
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+
+# Plotting the cube vertices
+ax.plot(cubeVertices.T[0], cubeVertices.T[1], cubeVertices.T[2], "ko", color='blue')
+
+# Plotting simplices connecting to vertices (2 simplices per square face)
+for s in hull.simplices:
+    s = np.append(s, s[0])  # Permuting back to first coordinate
+    ax.plot(cubeVertices[s, 0], cubeVertices[s, 1], cubeVertices[s, 2], color='mediumspringgreen')
+
+# Defining plot axes labels
+for i in ["x", "y", "z"]:
+    eval("ax.set_{:s}label('{:s}')".format(i, i))
+
+plt.show()
+
 
 # Repeating the above calculation with the wake wedge
-quickPlotHull(wakeWedge)
+pts = wakeWedge
+hull = ConvexHull(pts)
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+
+ax.plot(pts.T[0], pts.T[1], pts.T[2], "ko", color='blue')
+
+for s in hull.simplices:
+    s = np.append(s, s[0])
+    ax.plot(pts[s, 0], pts[s, 1], pts[s, 2], color='mediumspringgreen')
+
+for i in ["x", "y", "z"]:
+    eval("ax.set_{:s}label('{:s}')".format(i, i))
+
+plt.show()
 
     
 #%% Checking if a set of points lie within the hull 유
 
-def pointChecker(hullPoints, testPoints, plot=False):
+def pointChecker(points, p, plot=True):
     
     # Defining hull and test points
-    hull = ConvexHull(hullPoints)
-    newPoints = np.append(hullPoints, testPoints, axis=0)
-    newHull = ConvexHull(newPoints)
+    hull = ConvexHull(points)
+    new_points = np.append(points, p, axis=0)
+    new_hull = ConvexHull(new_points)
     
     # Checking if points are within the hull
-    if list(hull.vertices) == list(newHull.vertices):
+    if list(hull.vertices) == list(new_hull.vertices):
         criterion = True
     else:
         criterion = False
@@ -201,17 +211,32 @@ def pointChecker(hullPoints, testPoints, plot=False):
     if plot == True:
     
         # Plotting the hull & test points
-        quickPlotHull(hullPoints,testPoints)
-    
-    else:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        ax.plot(points.T[0], points.T[1], points.T[2], "ko", color='blue')
         
+        for s in hull.simplices:
+            s = np.append(s, s[0])
+            ax.plot(points[s, 0], points[s, 1], points[s, 2], color='mediumspringgreen')
+            
+        for i in ["x", "y", "z"]:
+            eval("ax.set_{:s}label('{:s}')".format(i, i))
+            
+        ax.scatter(
+        p[:,0],p[:,1],p[:,2], color='black'
+        )
+        
+        # print(criterion)
+        
+    else:
+        # print(criterion)
         return criterion
     
 
 # Running preliminary examples
 pointChecker(wakeWedge,np.array([[1,1,1]]),True)
 pointChecker(wakeWedge,np.array([[2,1,1]]),True)
-pointChecker(wakeWedge,np.array([[1,1,1],[2,1,1]]))
+pointChecker(wakeWedge,np.array([[1,1,1],[2,1,1]]),False)
 
 
 #%% Computing brightness temperature function δT(z) for points within wake 유
@@ -229,18 +254,15 @@ positions = np.vstack([X.ravel(), Y.ravel(), Z.ravel()])
 emptyPositions = []
 wedgePoints = [] #Physical points within wedge only
 wedgeTemperatures = [] #Temperature of points within wedge only
-
-# Converting mesh grid to physical points in 3D space
 for i in range(len(positions.T)):
     emptyPositions.append([positions[0][i],positions[1][i],positions[2][i]])
 
 physicalPositions = np.array(emptyPositions)
 
-# Iterating through the Hubble lattice to find points within wake and assign a temperature
+# Assigning brightness temperature to points within the wedge
 temperatureValues = np.zeros((len(positions.T),1))
-
 for i in range(len(physicalPositions)):
-    if pointChecker(wakeWedge,np.array([physicalPositions[i]])) == True:
+    if pointChecker(wakeWedge,np.array([physicalPositions[i]]), False) == True:
         temperatureValues[i] = brightnessTemperature(physicalPositions[i][2])
         wedgePoints.append(physicalPositions[i])
         wedgeTemperatures.append(brightnessTemperature(physicalPositions[i][2]))
@@ -249,10 +271,21 @@ physicalWedgePoints = np.array(wedgePoints)
 physicalWedgeTemperatures = np.array(wedgeTemperatures)
 
 # Plotting physical points within wake excluding ambient points
-quickPlot(
-    hubbleScale/4,physicalWedgePoints,['Internal temperature points'],
-    ['red'], physicalWedgeTemperatures
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_ylim(0,hubbleScale/4)
+ax.set_xlim(0,hubbleScale/4)
+ax.set_zlim(0,hubbleScale/4)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+physicalPlot = ax.scatter(
+    physicalWedgePoints[:,0],physicalWedgePoints[:,1],physicalWedgePoints[:,2], c=physicalWedgeTemperatures,
+    label = 'Internal temperature points', cmap = plt.cm.viridis
     )
+ax.legend()
+ax.set_box_aspect([np.ptp(i) for i in meshGrid]) #Equal aspect ratio for axes
+fig.colorbar(physicalPlot, ax=ax, label = 'δT(z)', pad=0.1)
 
 
 # %% CODE GRAVEYARD: Testing rotations: A = dot(A, R.T) where A is an array of points, R.T is the transposed rotation matrix R
