@@ -9,7 +9,7 @@ The strings occur in a class of renormalizable quantum field theories and are st
 
 ## Code Functionality
 
-
+The file *Cosmic String Extraction Statistics.py* builds the cosmic string signal from scratch as a finite density of energy radiating a certain temperature difference admist the 21cm background temperature map. This propagates through spacetime and traces out a wake which has the temperature gradient defined on its complex hull. Then using universe simulations done with 21cmFAST, the string signal is embedded in the primordial noise. Finally, to extract the dynamic signal we make use of statistics such as correlation functions, matched filters, and wavelets. The output are plots of these statistics when the signal of the string is detected in the noise.
 
 ## Limitations
 
@@ -25,3 +25,4 @@ snapshot of physical coordinates to substitute for a continuous comoving coordin
 
 ## Next Steps
 
+At this point, the problem statement has been defined and the foundational code base has been laid. Potential additions to the code would include higher dimensional topological defect signals, and including an algorithm to invert the redshift function without the limitation of convergence.
