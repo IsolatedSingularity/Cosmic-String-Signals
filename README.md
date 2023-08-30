@@ -13,15 +13,14 @@ The strings occur in a class of renormalizable quantum field theories and are st
 
 ## Limitations
 
-It is worth mentioning some caveats of the analysis done above for those working on similar projects. First,
-the method in which points are detected within the wake is done using complex convex hulls. This algorithm
-becomes problematic when the blown up deficit angle is replaced by its actual value of α = 8πGμ which
+The method in which points are detected within the wake is done using complex convex hulls. This algorithm
+becomes problematic when the blown up deficit angle is replaced by its actual value of $\alpha = 8 \pi G \mu$ which
 is very small and thus the wake becomes a plane. The algorithm is based on connecting simplices along
 different vertices and does not work when the topology of the object is in 1D. Next, when converting from
 physical to comoving coordinates, one uses an inverse scaling factor of the form a−1(z) = (1 − z)/z, which
-can also be substituted for a−1(t0) ∼ 103 for current observations. This scaling becomes an issue when
+can also be substituted for a^−1(t0) ∼ 103 for current observations. This scaling becomes an issue when
 wanting to scale physical axes to redshift axes using the numerical function from the astropy package, which
-doesn’t converge for small (O(1)) or large (O(1000)) values of redshift. Thus, we are left with to work in a
+doesn’t converge for small O(1) or large O(1000) values of redshift. Thus, we are left with to work in a
 snapshot of physical coordinates to substitute for a continuous comoving coordinate system.
 
 ## Next Steps
