@@ -1,0 +1,31 @@
+Assigned Readings Order
+
+Standard Cosmology: DONE
+
+- TASI Lectures on Inflation; Sec 1-3
+- Inflationary cosmology: Progress & problems; Sec 2
+
+
+Inflationary Cosmology: DONE
+
+- TASI Lectures on Inflation; Sec 4
+- Inflationary cosmology: Progress & problems; Sec 3
+
+
+Topological Defects: DONE
+
+- Topological defects & structure formation; Sec 3.1-3.7, 4.1, 4.2, 4.3\{4.19-4.30}, 4.4, 6, (8.1-)8.3
+- Searching for Cosmic Strings in New Observational Windows
+
+
+Cosmic strings & 21 cm+:
+
+
+- The 21 cm Signature of Cosmic String Wakes
+- Signal of cosmic strings in cross correlation of 21 cm redshit and CMB polarization maps
+- Extracting the Signal of Cosmic String Wakes from 21 cm Observations
+
+
++++ Questions: 
+
+- 
