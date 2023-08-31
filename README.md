@@ -15,7 +15,7 @@ The strings occur in a class of renormalizable quantum field theories and are st
 
 The report covering all the theory and code can be found in the main repository as a PDF file.
 
-## Limitations
+## Caveats
 
 The method in which points are detected within the wake is done using complex convex hulls. This algorithm
 becomes problematic when the blown up deficit angle is replaced by its actual value of $\alpha = 8 \pi G \mu$ which
