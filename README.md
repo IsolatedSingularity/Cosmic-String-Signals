@@ -29,6 +29,4 @@ snapshot of physical coordinates to substitute for a continuous comoving coordin
 
 ## Next Steps
 
-At this point, the problem statement has been defined and the foundational code base has been laid. Potential additions to the code would include higher dimensional topological defect signals, and including an algorithm to invert the redshift function without the limitation of convergence.
-
-
+At this stage, we've clarified the problem statement and established the fundamental code framework. Potential additions to the code would include higher dimensional topological defect signals, and including an algorithm to invert the redshift function without the limitation of convergence.
