@@ -174,7 +174,7 @@ The temperature model $\delta T_b(\nu)$ assumes certain simplifications about ga
 - [ ] Use MCMC or Bayesian inference frameworks with the matched filtering outputs to place statistical constraints on $G\mu$.
 - [ ] Integrate machine learning or wavelet-based analysis for non-Gaussian features in the noise field.
 
-\text{
+
 ## Theoretical Background
 
 When a scalar field $\phi$ with a potential
@@ -261,7 +261,7 @@ This convolution maximizes the signal-to-noise ratio, making it possible to iden
 \includegraphics[scale=0.5]{https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/matchFilter.png}
 
 Above: Match filter results for various data sets. The peak indicates the presence of a cosmic string wake in noisy data, confirming its detection.
-}
+
 
 
 
