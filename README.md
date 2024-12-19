@@ -1333,10 +1333,7 @@ ax.grid()
 #endregion
 
 ```
-# Additional plotting, rotation, scaling, wedge construction, redshift conversion,
-# matched filtering, and convolution functions are defined below. 
-# For brevity, we omit re-displaying all of them here, but they appear in the full code.
-
+</details>
 
 ## Caveats
 
