@@ -85,6 +85,19 @@ The temperature model $\delta T_b(\nu)$ assumes certain simplifications about ga
 - [ ] Use MCMC or Bayesian inference frameworks with the matched filtering outputs to place statistical constraints on $G\mu$.
 - [ ] Integrate machine learning or wavelet-based analysis for non-Gaussian features in the noise field.
 
+## Code Functionality
+
+The main code (`Cosmic String Extraction Statistics.py`) constructs a simulated environment for detecting cosmic string wakes.
+
+### 1. Initialize Universe and Parameters:
+Sets Hubble volume, cosmological parameters, and random seeds for reproducibility.
+
+```python
+hubbleParameter = 70.41 * 1000   # [m/s/Mpc] Hubble constant H(z=0)
+densityRatio = 0.3               # Non-relativistic matter density for flat ΛCDM
+speedOfLight = 299792458         # [m/s] Speed of light
+hubbleScale = speedOfLight / hubbleParameter  # [Mpc] Hubble length
+
 > [!TIP]
 > For a detailed derivation of the brightness temperature formula, the homotopy classification of defects, and scaling solutions for cosmic strings, consult the PDF in the main repository.
 
