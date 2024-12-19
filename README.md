@@ -97,6 +97,84 @@ hubbleParameter = 70.41 * 1000   # [m/s/Mpc] Hubble constant H(z=0)
 densityRatio = 0.3               # Non-relativistic matter density for flat ΛCDM
 speedOfLight = 299792458         # [m/s] Speed of light
 hubbleScale = speedOfLight / hubbleParameter  # [Mpc] Hubble length
+```
+
+### 2. Cosmic String Wake Generation:
+Builds a finite-length cosmic string segment, determines its wake geometry, applies rotations from $SO(3)$ group elements to orient it arbitrarily in space, and then maps it into redshift space using distance-redshift relations.
+
+```python
+Gμ = 3E-7  # string tension
+deficitAngle = 8 * np.pi * Gμ
+wakeLength = c1 * formationTime * speedOfLight * meterToMpc  # [Mpc]
+wakeDepth = formationTime * gammaFactor * stringSpeed * meterToMpc  # [Mpc] radial length
+```
+
+The wake geometry is defined by six vertices:
+
+```python
+wakeWedge = np.array([
+    wakeTipPoint, wakeEndPoints[0], wakeEndPoints[1],
+    projectedWakePoints[0], projectedWakePoints[1], projectedWakePoints[2]
+])
+```
+
+### 3. Wake in Physical Space
+Assigning Temperature Fields:
+Within the wake's convex hull, assigns a temperature gradient based on the brightness temperature formula $\delta T_b(\nu)$. Outside the wake, the temperature field is ambient.
+
+```python
+def brightnessTemperature(z):
+    deexcitationCrossSection = 0.16
+    if (kineticTemperature(z) > 3*gasTemperature(z)):
+        u = kineticTemperature(z)
+    else:
+        u = 3*gasTemperature(z)
+    if (kineticTemperature(z) > 3*gasTemperature(z)):
+        c = 4
+    else:
+        c = 1 + kineticTemperature(z)/gasTemperature(z)
+    a = 0.017*deexcitationCrossSection/(1+deexcitationCrossSection)*(1-photonCMBTemp(z)/u)*np.sqrt(1+z)*c
+    return a
+```
+
+### 4. Primordial Noise Embedding:
+Loads or simulates a 3D $\Lambda$CDM cosmological noise map (using 21cmFAST simulations) and superimposes it with the wake signal. This results in a realistic data cube containing both signal and noise.
+
+```python
+perturbationNoise = box * 0.001  # converting from mK to K
+smallNoiseMap = np.copy(thirdDimensionSlice)  # 29x29x29 array of temps
+reshapedTempMap = gridTemps.reshape((29,29,29))  # 29x29x29 array of temps
+combinedMap = smallNoiseMap + reshapedTempMap
+```
+
+### 5. Matched Filtering & Statistics:
+Performs matched filtering by correlating the wake template with the data. Evaluates various slices and orientations, unfolding 2D and 3D data arrays into 1D arrays if necessary to maximize the signal-to-noise ratio.
+
+```python
+def unfolder(grid, type):
+    amplitudeValues = []
+    virtualGrid = np.copy(grid)
+    if type == 'horizontal':
+        for row in virtualGrid:
+            for value in row:
+                amplitudeValues.append(value)
+    elif type == 'vertical':
+        for column in virtualGrid.T:
+            for value in column:
+                amplitudeValues.append(value)
+    return amplitudeValues
+
+horizontalUnfoldedWake = unfolder(convolvedWake, 'horizontal')
+verticalUnfoldedWake = unfolder(convolvedWake, 'vertical')
+
+The matched filtering is then applied:
+
+python
+horizontalWakeWake = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnfoldedConvolvedWake, mode='full')
+horizontalWakeNoise = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnfoldedConvolvedNoise, mode='full')
+horizontalWakeCombined = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnfoldedConvolvedCombined, mode='full')
+```
+
 
 > [!TIP]
 > For a detailed derivation of the brightness temperature formula, the homotopy classification of defects, and scaling solutions for cosmic strings, consult the PDF in the main repository.
