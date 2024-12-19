@@ -1,32 +1,158 @@
 # Topological Defect Signals
-###### Under the supervision of [Professor Robert Brandenberger](https://www.physics.mcgill.ca/~rhb/) at [McGill University](https://www.mcgill.ca/), and in collaboration with [Mattéo Blamart](https://inspirehep.net/authors/2077637). Funded by the [NSERC USRA](https://www.nserc-crsng.gc.ca/students-etudiants/ug-pc/usra-brpc_eng.asp) award with [FRQNT supplements](https://frq.gouv.qc.ca/en/program/supplements-of-the-nserc-undergraduate-student-research-awards-usra-bpca-2023-2024/).
 
-![alt text](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/2DConvolution.png?raw=true)
+###### Research project under the supervision of [Professor Robert Brandenberger](https://www.physics.mcgill.ca/~rhb/) at [McGill University](https://www.mcgill.ca/). Collaboration with [Mattéo Blamart](https://inspirehep.net/authors/2077637). Funded by the [NSERC USRA](https://www.nserc-crsng.gc.ca/students-etudiants/ug-pc/usra-brpc_eng.asp) award and [FRQNT supplements](https://frq.gouv.qc.ca).
 
-## Objective
+---
 
-Phase transitions in the very early universe cause spontaneous symmetry breaking events which create topological defects. Linear topological defects associated with the U(1) symmetry group are known as **cosmic strings** and create high energy signals in the form of wakes as they propagate through spacetime. Their presence thus is of interest to study the high energy structure of the universe and the standard model.
+### Objective
 
-The strings occur in a class of renormalizable quantum field theories and are stable under specific conditions on the spacetime manifold's homotopy groups. Their dynamics are given by the Nambu-Gotto action, much like bosonic excitations in string theory. What's more is that gravitational backreaction during the early universe causes primordial ΛCDM noise which hides the string signal. Thus the purpose of this repository is to develop statistics to efficiently extract the cosmic string signal admist the non-linear noise through the framework of 21cm cosmology.
+Phase transitions in the early universe induced **spontaneous symmetry breaking**, forming **topological defects**. Among these, **cosmic strings**—predicted by $U(1)$ symmetry breaking—leave detectable temperature gradients in spacetime due to the wakes they trace. 
+
+However, their detection is hindered by ΛCDM primordial noise in 21cm cosmology. The aim of this repository is to **construct statistical tools to extract cosmic string signals** hidden amid this background noise. The tools include convex geometry modeling, match filtering, and correlation functions to analyze 21cm redshift data.
+
+---
 
 ## Code Functionality
 
-*Cosmic String Extraction Statistics.py* builds the cosmic string signal from scratch as a finite density of energy radiating a certain temperature difference admist the 21cm background temperature map. This propagates through spacetime and traces out a wake which has the temperature gradient defined on its convex hull. Then using universe simulations done with 21cmFAST, the string signal is embedded in the primordial noise. Finally, to extract the dynamic signal we make use of statistics such as correlation functions, matched filters, and wavelets. The output are plots of these statistics when the signal of the string is detected in the noise.
+### **1. Cosmic String Wake Geometry in Physical Space**
 
-The report covering all the theory and code can be found in the main repository as a PDF file.
+A cosmic string propagating through spacetime generates a wedge-shaped **wake**. The properties of this wake are determined by:
+- Velocity of the string $$v$$.
+- String tension $$G\mu$$, where $$\alpha = 8\pi G\mu$$ is the **deficit angle**.
+
+#### Key Equations:
+1. **Deficit angle**:  
+   $$\alpha = 8\pi G\mu$$  
+   $$\delta v = 4\pi G\mu v \gamma(v)$$
+
+2. **Brightness Temperature**:  
+   $$  
+   \delta T_b(z) = A \cdot \left(1 - \frac{T_{\gamma}(z)}{T_k(z)}\right) \cdot \sqrt{1+z}
+   $$
+
+where:
+- $$T_{\gamma}(z)$$ is the CMB photon temperature.
+- $$T_k(z)$$ is the kinetic temperature of baryons in the wake.
+
+<details>
+<summary><i>Python: Wake Geometry Construction</i></summary>
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial import ConvexHull
+Defining wake geometry
+def cosmic_string_wake(length, depth, tip, angle):
+endpoints = [
+tip + depth * np.array([np.cos(angle / 2), np.sin(angle / 2), 0]),
+tip + depth * np.array([np.cos(angle / 2), -np.sin(angle / 2), 0]),
+]
+return np.vstack([tip, *endpoints])
+Parameters for visualization
+wake_length = 10 # Mpc
+wake_depth = 5 # Mpc
+wake_tip = np.array([2, 2, 0])
+string_deficit_angle = np.pi / 3 wake_wedge = cosmic_string_wake(wake_length, wake_depth, wake_tip, string_deficit_angle)
+Convex Hull for visualization
+hull = ConvexHull(wake_wedge)
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(projection='3d')
+ax.scatter(wake_wedge[:, 0], wake_wedge[:, 1], wake_wedge[:, 2]) for simplex in hull.simplices:
+ax.plot(wake_wedge[simplex, 0], wake_wedge[simplex, 1], wake_wedge[simplex, 2], 'r-') ax.set_title("Cosmic String Wake Geometry")
+plt.show()
+
+text
+
+#### Visualization of Wake Geometry:
+![Wake Geometry](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/WakeGeometry3D.png?raw=true)
+
+</details>
+
+---
+
+### **2. Embedding Wake in Redshift Space**
+
+To observe signals in cosmology, the wake geometry must be transferred to **redshift space**. Redshift and distance are related through cosmology-dependent scaling relations:
+$$
+d(z) = \int_0^z \frac{c \, dz'}{H(z')}, \quad a(z) = \frac{1}{1+z}
+$$
+
+
+<details>
+<summary><i>Python: Redshift Embedding</i></summary>
+
+from astropy.cosmology import Planck18 as cosmo
+Compute redshift-distance relationship
+z_vals = np.linspace(0, 4, 500)
+distances = cosmo.comoving_distance(z_vals).value plt.figure(figsize=(10, 5))
+plt.plot(z_vals, distances)
+plt.title("Redshift-Distance Relationship")
+plt.xlabel("Redshift (z)")
+plt.ylabel("Distance (Mpc)")
+plt.grid()
+plt.show()
+
+text
+
+#### Redshift-Distance Relationship:
+![Redshift to Distance](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/RedshiftScaling.png?raw=true)
+
+</details>
+
+---
+
+### **3. Signal Processing with Match Filtering**
+
+The cosmic string wake generates a narrow **temperature gradient** signal, which we extract using **match filtering**. Match filtering compares a signal template $$h$$ against data $$d$$ for a best match:
+$$
+S(t) = \sum_k h(t-k) \cdot d(k)
+$$
+
+
+<details>
+<summary><i>Python: Match Filtering on Wake Signal</i></summary>
+
+def match_filter(data, template):
+return np.correlate(data, template, mode='full')
+Example signal and noisy data
+wake_signal = np.linspace(0, 1, 100)
+noise = np.random.normal(0, 0.1, 100)
+data = wake_signal + noise
+Match filtering
+filter_result = match_filter(data, wake_signal) plt.figure(figsize=(8, 6))
+plt.plot(filter_result, label="Match Filter Output")
+plt.legend()
+plt.title("Signal Extraction with Match Filtering")
+plt.show()
+
+text
+
+#### Match Filtering:
+![Match Filtering](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/1DMatchFilter.png?raw=true)
+
+</details>
+
+---
+
+### **4. Combining Signal with ΛCDM Noise**
+
+Cosmological ΛCDM noise is simulated using **21cmFAST**. The wake signal is superimposed on a 3D primordial noise map. 
+
+#### Visualization:
+![Combined Maps](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Plots/CombinedMapSlice.png?raw=true)
+
+---
 
 ## Caveats
 
-The method in which points are detected within the wake is done using complex convex hulls. This algorithm
-becomes problematic when the blown up deficit angle is replaced by its actual value of $\alpha = 8 \pi G \mu$ which
-is very small and thus the wake becomes a plane. The algorithm is based on connecting simplices along
-different vertices and does not work when the topology of the object is in 1D. Next, when converting from
-physical to comoving coordinates, one uses an inverse scaling factor of the form $a^{−1}(z) = (1 − z)/z$, which
-can also be substituted for $a^{−1}(t_0) \sim 10^3$ for current observations. This scaling becomes an issue when
-wanting to scale physical axes to redshift axes using the numerical function from the astropy package, which
-doesn’t converge for small $\mathcal{O}(1)$ or large $\mathcal{O}(1000)$ values of redshift. Thus, we are left with to work in a
-snapshot of physical coordinates to substitute for a continuous comoving coordinate system.
+1. **Wake Planarity**: For realistic $$G\mu$$ values, the wake becomes nearly planar, which complicates convex hull detection.
+2. **Redshift Scaling Instability**: Numerical scaling functions may diverge for very small or very large $$z$$.
+
+---
 
 ## Next Steps
 
-At this stage, we've clarified the problem statement and established the fundamental code framework. Potential additions to the code would include higher dimensional topological defect signals, and including an algorithm to invert the redshift function without the limitation of convergence.
+- [ ] Extend framework to higher-dimensional defects (e.g., textures).
+- [ ] Build GPU-accelerated match filtering for real-time signal processing.
+- [ ] Address numerical instability in redshift scaling for extreme $$z$$ values.
+
+For theoretical derivations and complete methods, refer to the full report: [Signal Extraction of Cosmic String Topological Defects](https://github.com/IsolatedSingularity/Cosmic-String-Wakes/blob/main/Signal-extraction-of-cosmic-string-topological-defects-Morais.pdf).
