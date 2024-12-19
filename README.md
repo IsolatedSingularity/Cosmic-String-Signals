@@ -64,29 +64,6 @@ The main code (`Cosmic String Extraction Statistics.py`) constructs a simulated 
 5. **Matched Filtering & Statistics:**  
    Performs matched filtering by correlating the wake template with the data. Evaluates various slices and orientations, unfolding 2D and 3D data arrays into 1D arrays if necessary to maximize the signal-to-noise ratio. Also explores wavelet transforms and other correlation methods to further isolate the signal.
 
-
-</details>
-
-## Caveats
-
-- Convex Hull Limitations:
-When the actual deficit angle $\alpha = 8\pi G\mu$ is tiny, the wake is almost a plane, making convex hull detection challenging. The current algorithm relies on simplices, which fails in near-1D geometries.
-
-- Redshift Conversion Issues:
-Using astropy.cosmology functions, extremely small or large $z$ values may cause numerical convergence problems. Thus, the code currently focuses on realistic $z$ ranges and approximates comoving coordinates.
-
-- Simplifications in Physics:
-The temperature model $\delta T_b(\nu)$ assumes certain simplifications about gas thermodynamics and the kinetic temperature relationship. Real-world complexities (shock heating, non-linear structure) may require more sophisticated modeling.
-
-## Next Steps
-
-- [x] Implement match filtering on multiple slicing orientations to find the most robust direction for signal extraction.
-- [ ] Explore alternative geometric detection algorithms that handle planar or line-like topologies robustly.
-- [ ] Use MCMC or Bayesian inference frameworks with the matched filtering outputs to place statistical constraints on $G\mu$.
-- [ ] Integrate machine learning or wavelet-based analysis for non-Gaussian features in the noise field.
-
-## Code Functionality
-
 The main code (`Cosmic String Extraction Statistics.py`) constructs a simulated environment for detecting cosmic string wakes.
 
 ### 1. Initialize Universe and Parameters:
@@ -174,6 +151,28 @@ horizontalWakeWake = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnf
 horizontalWakeNoise = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnfoldedConvolvedNoise, mode='full')
 horizontalWakeCombined = np.correlate(horizontalUnfoldedConvolvedWake, horizontalUnfoldedConvolvedCombined, mode='full')
 ```
+
+
+
+</details>
+
+## Caveats
+
+- Convex Hull Limitations:
+When the actual deficit angle $\alpha = 8\pi G\mu$ is tiny, the wake is almost a plane, making convex hull detection challenging. The current algorithm relies on simplices, which fails in near-1D geometries.
+
+- Redshift Conversion Issues:
+Using astropy.cosmology functions, extremely small or large $z$ values may cause numerical convergence problems. Thus, the code currently focuses on realistic $z$ ranges and approximates comoving coordinates.
+
+- Simplifications in Physics:
+The temperature model $\delta T_b(\nu)$ assumes certain simplifications about gas thermodynamics and the kinetic temperature relationship. Real-world complexities (shock heating, non-linear structure) may require more sophisticated modeling.
+
+## Next Steps
+
+- [x] Implement match filtering on multiple slicing orientations to find the most robust direction for signal extraction.
+- [ ] Explore alternative geometric detection algorithms that handle planar or line-like topologies robustly.
+- [ ] Use MCMC or Bayesian inference frameworks with the matched filtering outputs to place statistical constraints on $G\mu$.
+- [ ] Integrate machine learning or wavelet-based analysis for non-Gaussian features in the noise field.
 
 
 > [!TIP]
