@@ -65,7 +65,7 @@ The main code (`Cosmic String Extraction Statistics.py`) constructs a simulated 
    Performs matched filtering by correlating the wake template with the data. Evaluates various slices and orientations, unfolding 2D and 3D data arrays into 1D arrays if necessary to maximize the signal-to-noise ratio. Also explores wavelet transforms and other correlation methods to further isolate the signal.
 
 <details>
-  <summary><i>Match Filtering Algorithm</i></summary>
+  <summary><i>Cosmic String Signal Extraction Algorithm</i></summary>
 
 ```python
 #%% Importing modules 유
