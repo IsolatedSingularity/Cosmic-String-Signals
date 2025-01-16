@@ -59,7 +59,7 @@ The main code (`Cosmic String Extraction Statistics.py`) constructs a simulated 
    Within the wake’s convex hull, assigns a temperature gradient based on the brightness temperature formula $\delta T_b(\nu)$. Outside the wake, the temperature field is ambient.
 
 4. **Primordial Noise Embedding:**  
-   Loads or simulates a 3D $\Lambda$CDM cosmological noise map (using 21cmFAST simulations) and superimposes it with the wake signal. This results in a realistic data cube containing both signal and noise.
+   Loads or simulates a 3D $\Lambda\text{CDM}$ cosmological noise map (using 21cmFAST simulations) and superimposes it with the wake signal. This results in a realistic data cube containing both signal and noise.
 
 5. **Matched Filtering & Statistics:**  
    Performs matched filtering by correlating the wake template with the data. Evaluates various slices and orientations, unfolding 2D and 3D data arrays into 1D arrays if necessary to maximize the signal-to-noise ratio. Also explores wavelet transforms and other correlation methods to further isolate the signal.
