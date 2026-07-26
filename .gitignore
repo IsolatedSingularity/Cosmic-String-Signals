@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,3 +24,10 @@ htmlcov/
 Thumbs.db
 
 Jenova/
+
+# Kilo Code / Agent Configuration
+.kilo/
+.kilocodeignore
+AGENTS.md
+Jenova/
+
